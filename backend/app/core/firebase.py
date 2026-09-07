@@ -1,5 +1,4 @@
 import os
-import json
 import logging
 from typing import Optional, Dict, Any
 import firebase_admin
@@ -10,14 +9,26 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-# Initialize Firebase Admin app
+# Global singleton for Firebase Admin app
 _firebase_app: Optional[firebase_admin.App] = None
 
 def init_firebase_admin() -> Optional[firebase_admin.App]:
+    """
+    Initializes and returns the global Firebase Admin App instance.
+    Checks for existing default app instance before creating a new one.
+    """
     global _firebase_app
     if _firebase_app is not None:
         return _firebase_app
 
+    # 1. Check if default Firebase app already exists
+    try:
+        _firebase_app = firebase_admin.get_app()
+        return _firebase_app
+    except ValueError:
+        pass  # App not initialized yet
+
+    # 2. Initialize Firebase app with service account or project ID
     try:
         if settings.FIREBASE_CREDENTIALS_PATH and os.path.exists(settings.FIREBASE_CREDENTIALS_PATH):
             cred = credentials.Certificate(settings.FIREBASE_CREDENTIALS_PATH)
@@ -26,11 +37,13 @@ def init_firebase_admin() -> Optional[firebase_admin.App]:
             })
             logger.info("Firebase Admin initialized with service account certificate.")
         elif settings.FIREBASE_PROJECT_ID:
-            # Initialize with project ID default credentials
             _firebase_app = firebase_admin.initialize_app(options={
                 "projectId": settings.FIREBASE_PROJECT_ID,
             })
             logger.info(f"Firebase Admin initialized with project ID: {settings.FIREBASE_PROJECT_ID}")
+        else:
+            _firebase_app = firebase_admin.initialize_app()
+            logger.info("Firebase Admin initialized with default options.")
     except Exception as e:
         logger.warning(f"Could not initialize Firebase Admin SDK: {e}")
         try:
@@ -39,6 +52,7 @@ def init_firebase_admin() -> Optional[firebase_admin.App]:
             _firebase_app = None
 
     return _firebase_app
+
 
 
 # Google JWKS endpoint for Firebase Token verification fallback
