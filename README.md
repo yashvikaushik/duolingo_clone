@@ -1,114 +1,74 @@
-# Duolingo Web App Clone
+# 🏗️ Feature: Project Scaffolding & Foundation (`feature/project-setup`)
 
-A full-stack Duolingo clone web application built for an SDE full-stack capstone project.
-
----
-
-## 🛠 Tech Stack
-
-- **Frontend**: [Next.js](https://nextjs.org/) (App Router, TypeScript)
-- **Backend**: [FastAPI](https://fastapi.tiangolo.com/) (Python 3.13)
-- **Database**: SQLite
-- **ORM**: [SQLAlchemy](https://www.sqlalchemy.org/)
+This branch contains **Phase 0** of the Duolingo Clone project: establishing the foundational, decoupled project architecture for both the Next.js frontend and the FastAPI backend.
 
 ---
 
-## 📂 Project Structure
+## 🌟 Scope & Architecture Established in this Branch
 
-```text
-duolingo-clone/
-├── frontend/             # Next.js App Router frontend
-│   ├── src/
-│   │   ├── app/          # App router pages & layouts
-│   │   ├── components/   # UI & common reusable components
-│   │   ├── hooks/        # Custom React hooks
-│   │   ├── lib/          # API client and helper functions
-│   │   └── types/        # TypeScript type declarations
-│   ├── public/           # Static assets
-│   ├── package.json
-│   └── tsconfig.json
-├── backend/              # FastAPI Python backend
-│   ├── app/
-│   │   ├── api/          # Route controllers (v1 endpoints)
-│   │   ├── core/         # Configuration & settings
-│   │   ├── db/           # SQLite & SQLAlchemy setup (session & base)
-│   │   ├── models/       # SQLAlchemy models
-│   │   ├── schemas/      # Pydantic validation schemas
-│   │   ├── repositories/ # Data access abstraction layer
-│   │   ├── services/     # Business logic layer
-│   │   └── main.py       # FastAPI application entry point
-│   ├── requirements.txt
-│   └── .env.example
-├── notes/                # Local developer notes (gitignored)
-├── README.md
-└── .gitignore
+### 1. Frontend Architecture (`frontend/`)
+- Built with **Next.js (App Router)** and **TypeScript**.
+- Minimal, clean folder structure prepared for modular scalability:
+  ```text
+  frontend/
+  ├── src/
+  │   ├── app/          # App router pages & layouts (Root layout, page skeleton)
+  │   ├── components/   # UI components (ui/ & common/)
+  │   ├── hooks/        # Custom React hooks (e.g. useAuth)
+  │   ├── lib/          # API utilities and third-party integrations
+  │   └── types/        # TypeScript interface declarations
+  ├── package.json
+  └── tsconfig.json
+  ```
+- Tailored global design configuration (`globals.css`) using Vanilla CSS variables.
+
+### 2. Backend Architecture (`backend/`)
+- Built with **FastAPI** (Python 3.13) following clean architecture principles (Separation of Concerns):
+  ```text
+  backend/
+  ├── app/
+  │   ├── api/          # API route controllers (v1 router + health endpoint)
+  │   ├── core/         # Settings, environment configuration (Pydantic settings)
+  │   ├── db/           # Database engine, session maker, SQLAlchemy Base
+  │   ├── models/       # Database ORM models (SQLAlchemy)
+  │   ├── schemas/      # Request validation & response schemas (Pydantic)
+  │   ├── repositories/ # Abstract data access layer
+  │   ├── services/     # Business logic orchestration
+  │   └── main.py       # FastAPI application initialization & middleware
+  ├── requirements.txt
+  └── .env.example
+  ```
+- **Health-Check Endpoint (`GET /api/v1/health`)**: Validates server uptime and return status: `{"status": "ok", "app": "Duolingo Clone API"}`.
+
+### 3. Database Foundation
+- SQLite setup configured with SQLAlchemy ORM (`app/db/session.py`).
+- Pre-configured `Base` declarative model parent (`app/db/base.py`).
+
+### 4. Project Organization & Notes
+- Isolated `notes/` directory for developer architecture documentation (excluded from Git tracking via `.gitignore`).
+
+---
+
+## 🚀 How to Run & Test this Branch
+
+### 1. Backend Server
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+Verify health check:
+```bash
+curl http://localhost:8000/api/v1/health
 ```
 
----
+### 2. Frontend Application
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000).
 
-## 🚀 Getting Started
-
-### 1. Prerequisites
-- **Node.js**: v18+ (tested with v24.x)
-- **Python**: 3.10+ (tested with 3.13.x)
-
----
-
-### 2. Backend Setup
-
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-
-2. Create and activate a Python virtual environment:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Start the development server:
-   ```bash
-   uvicorn app.main:app --reload --port 8000
-   ```
-
-5. Verify backend health endpoint:
-   ```bash
-   curl http://localhost:8000/api/v1/health
-   ```
-   Interactive API docs are available at [http://localhost:8000/docs](http://localhost:8000/docs).
-
----
-
-### 3. Frontend Setup
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the Next.js development server:
-   ```bash
-   npm run dev
-   ```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
-## 🌿 Branching Strategy
-
-Development follows a feature-branch workflow:
-- `main`: Production-ready, stable codebase.
-- `feature/<feature-name>`: Dedicated branch for each isolated feature (e.g. `feature/project-setup`, `feature/auth`, `feature/learning-path`).
-- Branches are merged into `main` after verification and testing.
