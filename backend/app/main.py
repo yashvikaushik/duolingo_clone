@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -5,6 +6,9 @@ from app.core.config import settings
 from app.core.firebase import init_firebase_admin
 from app.db.session import init_db
 from app.api.v1.router import api_router
+
+# Configure logging so INFO-level messages from our app show in the console
+logging.basicConfig(level=logging.INFO, format="%(levelname)s:     %(name)s - %(message)s")
 
 
 @asynccontextmanager

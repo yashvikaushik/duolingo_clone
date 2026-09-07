@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, DateTime, func
+from sqlalchemy.orm import relationship
 from app.db.base import Base
 
 
@@ -13,8 +14,10 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     firebase_uid = Column(String(128), unique=True, index=True, nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
-    username = Column(String(100), unique=True, index=True, nullable=True)
+    username = Column(String(100), unique=True, index=True, nullable=False)
     display_name = Column(String(150), nullable=True)
+    age = Column(Integer, nullable=True)
+    country = Column(String(100), nullable=True)
     avatar_url = Column(String(500), nullable=True)
     
     created_at = Column(
@@ -31,5 +34,15 @@ class User(Base):
         nullable=False,
     )
 
+    # One-to-one relationship with UserStats
+    stats = relationship(
+        "UserStats",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+        lazy="joined",
+    )
+
     def __repr__(self) -> str:
         return f"<User id={self.id} email='{self.email}' username='{self.username}'>"
+

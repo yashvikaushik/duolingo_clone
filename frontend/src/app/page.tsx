@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
@@ -9,13 +10,15 @@ export default function HomePage() {
   const { firebaseUser, loading } = useAuth();
   const router = useRouter();
 
-  if (loading) return <LoadingScreen />;
+  // If already logged in, redirect to profile safely inside useEffect
+  useEffect(() => {
+    if (!loading && firebaseUser) {
+      router.push("/profile");
+    }
+  }, [loading, firebaseUser, router]);
 
-  // If already logged in, redirect to profile
-  if (firebaseUser) {
-    router.push("/profile");
-    return <LoadingScreen />;
-  }
+  if (loading) return <LoadingScreen message="LOADING..." />;
+  if (firebaseUser) return <LoadingScreen message="LOADING..." />;
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#131f24" }}>

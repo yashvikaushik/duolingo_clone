@@ -24,8 +24,8 @@ interface AuthContextType {
   signupWithEmail: (
     email: string,
     password: string,
-    username?: string,
-    displayName?: string
+    displayName?: string,
+    age?: number,
   ) => Promise<UserProfile>;
   loginWithGoogle: () => Promise<UserProfile>;
   loginWithFacebook: () => Promise<UserProfile>;
@@ -56,6 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         display_name: customPayload?.display_name || fUser.displayName || undefined,
         avatar_url: customPayload?.avatar_url || fUser.photoURL || undefined,
         username: customPayload?.username,
+        age: customPayload?.age,
+        country: customPayload?.country,
       };
 
       const res = await fetchApi<UserProfile>("/auth/sync", {
@@ -121,8 +123,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signupWithEmail = async (
     email: string,
     password: string,
-    username?: string,
-    displayName?: string
+    displayName?: string,
+    age?: number,
   ): Promise<UserProfile> => {
     setError(null);
     try {
@@ -130,7 +132,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (displayName) {
         await updateFirebaseProfile(cred.user, { displayName });
       }
-      return await syncWithBackend(cred.user, { username, display_name: displayName });
+      return await syncWithBackend(cred.user, {
+        display_name: displayName,
+        age,
+      });
     } catch (err: any) {
       const formatted = mapAuthErrorMessage(err.code || err.message);
       setError(formatted);

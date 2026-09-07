@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -16,18 +16,18 @@ export default function ProfilePage() {
   const [username, setUsername] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"following" | "followers">("following");
 
-  // Redirect to login safely inside useEffect if not authenticated
-  React.useEffect(() => {
+  // Safely handle unauthenticated redirect inside useEffect
+  useEffect(() => {
     if (!loading && !firebaseUser) {
       router.push("/login");
     }
   }, [loading, firebaseUser, router]);
 
   if (loading || !firebaseUser) {
-    return <LoadingScreen />;
+    return <LoadingScreen message="LOADING..." />;
   }
-
 
   const openEdit = () => {
     setDisplayName(dbUser?.display_name || "");
@@ -70,168 +70,304 @@ export default function ProfilePage() {
         month: "long",
         year: "numeric",
       })
-    : "—";
+    : "September 2026";
+
+  const userDisplayName = dbUser?.display_name || firebaseUser.displayName || "Yashvi Kaushik";
+  const userHandle = dbUser?.username || firebaseUser.email?.split("@")[0] || "YashviKaus12";
 
   return (
     <div className="duo-app-layout">
+      {/* Left Fixed Navigation Sidebar */}
       <Sidebar />
+
+      {/* Main Content Dashboard */}
       <main className="duo-main-content">
-        <div className="duo-profile-container" id="profile-page">
-          {/* Profile Header */}
-          <div className="duo-profile-header">
-            <div className="duo-profile-avatar-lg">
-              {dbUser?.avatar_url ? (
-                <img
-                  src={dbUser.avatar_url}
-                  alt={dbUser.display_name || "User"}
-                  width={96}
-                  height={96}
-                  className="rounded-full"
-                />
-              ) : (
-                <div className="duo-avatar-placeholder-lg">
-                  {(dbUser?.display_name || dbUser?.email)?.[0]?.toUpperCase() || "?"}
+        <div className="duo-dashboard-grid">
+          
+          {/* Middle Column (Profile & Stats) */}
+          <div className="duo-center-column">
+            
+            {/* Top Avatar Banner Card */}
+            <div className="duo-profile-banner-card" id="profile-banner">
+              
+              {/* Edit Pencil Button */}
+              <button
+                className="duo-edit-pencil-btn"
+                onClick={openEdit}
+                aria-label="Edit Profile"
+                id="edit-profile-pencil"
+              >
+                ✏️
+              </button>
+
+              {/* Avatar Box */}
+              <div className="duo-avatar-silhouette-box">
+                {dbUser?.avatar_url || firebaseUser.photoURL ? (
+                  <img
+                    src={dbUser?.avatar_url || firebaseUser.photoURL || ""}
+                    alt={userDisplayName}
+                    className="w-full h-full object-cover rounded-2xl"
+                  />
+                ) : (
+                  <div className="duo-avatar-dashed-silhouette">
+                    <span>+</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Edit Form Modal Overlay / Inline Form */}
+              {isEditing && (
+                <form onSubmit={handleSave} className="duo-profile-edit-form mb-6">
+                  <div className="duo-form-group">
+                    <label className="duo-form-label" htmlFor="edit-display-name">
+                      Display Name
+                    </label>
+                    <input
+                      id="edit-display-name"
+                      type="text"
+                      className="duo-input"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder="Your display name"
+                      disabled={saving}
+                    />
+                  </div>
+                  <div className="duo-form-group">
+                    <label className="duo-form-label" htmlFor="edit-username">
+                      Username
+                    </label>
+                    <input
+                      id="edit-username"
+                      type="text"
+                      className="duo-input"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="Choose a username"
+                      disabled={saving}
+                    />
+                  </div>
+                  <div className="flex gap-3 mt-2">
+                    <button
+                      type="submit"
+                      className="duo-btn-green px-6 py-3 text-sm flex-1"
+                      disabled={saving}
+                      id="save-profile-btn"
+                    >
+                      {saving ? "SAVING..." : "SAVE CHANGES"}
+                    </button>
+                    <button
+                      type="button"
+                      className="duo-btn-outline px-6 py-3 text-sm flex-1"
+                      onClick={() => { setIsEditing(false); setSaveMsg(null); }}
+                      disabled={saving}
+                    >
+                      CANCEL
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {saveMsg && (
+                <div
+                  className="text-center text-sm font-semibold px-4 py-2.5 rounded-xl mb-4"
+                  style={{
+                    backgroundColor: saveMsg.includes("updated")
+                      ? "rgba(88, 204, 2, 0.12)"
+                      : "rgba(255, 75, 75, 0.12)",
+                    color: saveMsg.includes("updated") ? "#58cc02" : "#ff4b4b",
+                  }}
+                  role="status"
+                >
+                  {saveMsg}
                 </div>
               )}
+
+              {/* User Identity Meta Details */}
+              <div className="duo-user-meta">
+                <div>
+                  <h1 className="duo-user-fullname">{userDisplayName}</h1>
+                  <p className="duo-user-username-handle">{userHandle}</p>
+                  <p className="duo-user-joined-text">Joined {joinDate}</p>
+
+                  <div className="duo-user-social-counts">
+                    <span>0 Following</span>
+                    <span>0 Followers</span>
+                  </div>
+                </div>
+
+                {/* Country Flag Badge */}
+                <div className="text-3xl select-none" title="English (US)">
+                  🇺🇸
+                </div>
+              </div>
             </div>
 
-            <div className="duo-profile-info">
-              <h1 className="duo-profile-name">
-                {dbUser?.display_name || dbUser?.username || dbUser?.email?.split("@")[0] || "Learner"}
-              </h1>
-              {dbUser?.username && (
-                <p className="duo-profile-username">@{dbUser.username}</p>
-              )}
-              <p className="duo-profile-joined">
-                📅 Joined {joinDate}
-              </p>
+            {/* Statistics Section */}
+            <div>
+              <h2 className="duo-section-header">Statistics</h2>
+              <div className="duo-stats-2x2">
+                <div className="duo-stat-card-item">
+                  <span className="icon">🔥</span>
+                  <div>
+                    <div className="val">{dbUser?.streak_count ?? 0}</div>
+                    <div className="lbl">Day streak</div>
+                  </div>
+                </div>
+
+                <div className="duo-stat-card-item">
+                  <span className="icon">⚡</span>
+                  <div>
+                    <div className="val">{dbUser?.total_xp ?? 0}</div>
+                    <div className="lbl">Total XP</div>
+                  </div>
+                </div>
+
+                <div className="duo-stat-card-item">
+                  <span className="icon">🛡️</span>
+                  <div>
+                    <div className="val">None</div>
+                    <div className="lbl">Current league</div>
+                  </div>
+                </div>
+
+                <div className="duo-stat-card-item">
+                  <span className="icon">🥇</span>
+                  <div>
+                    <div className="val">0</div>
+                    <div className="lbl">Top 3 finishes</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {!isEditing && (
-              <button
-                className="duo-btn-outline px-5 py-2.5 text-sm"
-                onClick={openEdit}
-                id="edit-profile-btn"
+            {/* Achievements Section */}
+            <div>
+              <div className="duo-section-header">
+                <span>Achievements</span>
+                <span
+                  className="text-xs font-bold tracking-wider cursor-pointer"
+                  style={{ color: "#1cb0f6" }}
+                >
+                  VIEW ALL
+                </span>
+              </div>
+
+              <div className="duo-achievement-card">
+                <div className="duo-achievement-badge">
+                  <span>🔥</span>
+                  <span>LEVEL 1</span>
+                </div>
+                <div className="duo-achievement-info">
+                  <div className="duo-achievement-title">
+                    <span>Wildfire</span>
+                    <span style={{ color: "#8496a0" }}>0/3</span>
+                  </div>
+                  <div className="duo-progress-bar-bg">
+                    <div className="duo-progress-bar-fill" style={{ width: "0%" }} />
+                  </div>
+                  <div className="duo-achievement-desc">
+                    Reach a 3 day streak
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Right Column (Top Bar & Widgets) */}
+          <div className="duo-right-column">
+            
+            {/* Top Right Header Stats Bar */}
+            <div className="duo-top-stats-bar">
+              <div className="duo-stat-pill" title="Current Language">
+                <span className="text-xl">🇺🇸</span>
+              </div>
+              <div className="duo-stat-pill active" title="Streak">
+                <span className="text-lg">🔥</span>
+                <span style={{ color: "#8496a0" }}>0</span>
+              </div>
+              <div className="duo-stat-pill active" title="Gems">
+                <span className="text-lg">💎</span>
+                <span style={{ color: "#1cb0f6" }}>500</span>
+              </div>
+              <div className="duo-stat-pill active" title="Hearts">
+                <span className="text-lg">❤️</span>
+                <span style={{ color: "#ff4b4b" }}>4</span>
+              </div>
+            </div>
+
+            {/* Following / Followers Tab Widget */}
+            <div className="duo-widget-card">
+              <div className="duo-tab-header">
+                <div
+                  className={`duo-tab-btn ${activeTab === "following" ? "active" : ""}`}
+                  onClick={() => setActiveTab("following")}
+                >
+                  FOLLOWING
+                </div>
+                <div
+                  className={`duo-tab-btn ${activeTab === "followers" ? "active" : ""}`}
+                  onClick={() => setActiveTab("followers")}
+                >
+                  FOLLOWERS
+                </div>
+              </div>
+
+              <div className="duo-followers-empty">
+                <div className="duo-followers-characters select-none">
+                  <span>👩‍🎤</span>
+                  <span>👵</span>
+                  <span>🧔</span>
+                  <span>👩</span>
+                  <span>👴</span>
+                </div>
+                <p className="duo-followers-text">
+                  Learning is more fun and effective when you connect with others.
+                </p>
+              </div>
+            </div>
+
+            {/* Add Friends Widget */}
+            <div className="duo-widget-card">
+              <h3
+                className="font-extrabold text-base mb-3"
+                style={{ color: "#ffffff" }}
               >
-                EDIT PROFILE
-              </button>
-            )}
+                Add friends
+              </h3>
+              <div className="duo-friends-list">
+                <div className="duo-friend-item">
+                  <div className="duo-friend-item-left">
+                    <span className="text-xl">🔍</span>
+                    <span>Find friends</span>
+                  </div>
+                  <span className="duo-friend-arrow">›</span>
+                </div>
+
+                <div className="duo-friend-item">
+                  <div className="duo-friend-item-left">
+                    <span className="text-xl">📩</span>
+                    <span>Invite friends</span>
+                  </div>
+                  <span className="duo-friend-arrow">›</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Links */}
+            <div className="duo-footer-links">
+              <a href="#">ABOUT</a>
+              <a href="#">BLOG</a>
+              <a href="#">STORE</a>
+              <a href="#">EFFICACY</a>
+              <a href="#">CAREERS</a>
+              <a href="#">INVESTORS</a>
+              <a href="#">TERMS</a>
+              <a href="#">PRIVACY</a>
+            </div>
+
           </div>
 
-          {/* Save message */}
-          {saveMsg && (
-            <div
-              className="text-center text-sm font-semibold px-4 py-3 rounded-xl mb-4"
-              style={{
-                backgroundColor: saveMsg.includes("updated")
-                  ? "rgba(88, 204, 2, 0.12)"
-                  : "rgba(255, 75, 75, 0.12)",
-                color: saveMsg.includes("updated") ? "#58cc02" : "#ff4b4b",
-              }}
-              role="status"
-            >
-              {saveMsg}
-            </div>
-          )}
-
-          {/* Edit Form */}
-          {isEditing && (
-            <form onSubmit={handleSave} className="duo-profile-edit-form">
-              <div className="duo-form-group">
-                <label className="duo-form-label" htmlFor="edit-display-name">
-                  Display Name
-                </label>
-                <input
-                  id="edit-display-name"
-                  type="text"
-                  className="duo-input"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Your display name"
-                  disabled={saving}
-                />
-              </div>
-              <div className="duo-form-group">
-                <label className="duo-form-label" htmlFor="edit-username">
-                  Username
-                </label>
-                <input
-                  id="edit-username"
-                  type="text"
-                  className="duo-input"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Choose a username"
-                  disabled={saving}
-                />
-              </div>
-              <div className="flex gap-3 mt-2">
-                <button
-                  type="submit"
-                  className="duo-btn-green px-6 py-3 text-sm flex-1"
-                  disabled={saving}
-                  id="save-profile-btn"
-                >
-                  {saving ? "SAVING..." : "SAVE CHANGES"}
-                </button>
-                <button
-                  type="button"
-                  className="duo-btn-outline px-6 py-3 text-sm flex-1"
-                  onClick={() => { setIsEditing(false); setSaveMsg(null); }}
-                  disabled={saving}
-                >
-                  CANCEL
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* Stats Cards */}
-          <div className="duo-stats-grid">
-            <div className="duo-stat-card">
-              <span className="duo-stat-icon">🔥</span>
-              <div>
-                <div className="duo-stat-value">0</div>
-                <div className="duo-stat-label">Day streak</div>
-              </div>
-            </div>
-            <div className="duo-stat-card">
-              <span className="duo-stat-icon">⚡</span>
-              <div>
-                <div className="duo-stat-value">0</div>
-                <div className="duo-stat-label">Total XP</div>
-              </div>
-            </div>
-            <div className="duo-stat-card">
-              <span className="duo-stat-icon">🏆</span>
-              <div>
-                <div className="duo-stat-value">—</div>
-                <div className="duo-stat-label">Current league</div>
-              </div>
-            </div>
-            <div className="duo-stat-card">
-              <span className="duo-stat-icon">🥇</span>
-              <div>
-                <div className="duo-stat-value">0</div>
-                <div className="duo-stat-label">Top 3 finishes</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Account Details */}
-          <div className="duo-profile-section">
-            <h2 className="duo-section-title">Account Details</h2>
-            <div className="duo-detail-row">
-              <span className="duo-detail-label">Email</span>
-              <span className="duo-detail-value">{dbUser?.email || firebaseUser.email || "—"}</span>
-            </div>
-            <div className="duo-detail-row">
-              <span className="duo-detail-label">User ID</span>
-              <span className="duo-detail-value" style={{ fontSize: "0.75rem" }}>
-                {dbUser?.firebase_uid || "—"}
-              </span>
-            </div>
-          </div>
         </div>
       </main>
     </div>

@@ -4,7 +4,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
-from app.schemas.user import UserCreate, UserUpdate
+from app.schemas.user import UserCreate, UserUpdate, UserProfileResponse
 
 
 class UserService:
@@ -41,10 +41,13 @@ class UserService:
         display_name: Optional[str] = None,
         avatar_url: Optional[str] = None,
         preferred_username: Optional[str] = None,
+        age: Optional[int] = None,
+        country: Optional[str] = None,
     ) -> User:
         """
         Synchronizes a Firebase authenticated user with the database.
         Creates a new user record if one does not exist, or updates existing metadata.
+        Always ensures UserStats exists.
         """
         # 1. Search by Firebase UID
         user = self.repo.get_by_firebase_uid(firebase_uid)
@@ -71,10 +74,19 @@ class UserService:
                 if self.repo.get_by_username(preferred_username) is None:
                     user.username = preferred_username
                     needs_update = True
+            if age is not None and user.age is None:
+                user.age = age
+                needs_update = True
+            if country and not user.country:
+                user.country = country
+                needs_update = True
 
             if needs_update:
                 self.db.commit()
                 self.db.refresh(user)
+
+            # Ensure stats exist for legacy users
+            user = self.repo.ensure_stats(user)
             return user
 
         # 4. Create new user
@@ -90,8 +102,11 @@ class UserService:
             email=email,
             username=final_username,
             display_name=display_name or final_username,
+            age=age,
+            country=country,
             avatar_url=avatar_url,
         )
+        # repo.create() also creates UserStats
         return self.repo.create(user_in)
 
     def get_by_firebase_uid(self, firebase_uid: str) -> Optional[User]:
@@ -108,3 +123,30 @@ class UserService:
                 raise ValueError("Username is already taken")
 
         return self.repo.update(user, user_update)
+
+    @staticmethod
+    def build_profile_response(user: User) -> UserProfileResponse:
+        """
+        Constructs a UserProfileResponse by flattening User + UserStats.
+        """
+        stats = user.stats
+        return UserProfileResponse(
+            id=user.id,
+            firebase_uid=user.firebase_uid,
+            email=user.email,
+            username=user.username,
+            display_name=user.display_name,
+            age=user.age,
+            country=user.country,
+            avatar_url=user.avatar_url,
+            created_at=user.created_at,
+            updated_at=user.updated_at,
+            streak=stats.streak if stats else 0,
+            total_xp=stats.total_xp if stats else 0,
+            current_league=stats.current_league if stats else None,
+            top_3_finishes=stats.top_3_finishes if stats else 0,
+            gems=stats.gems if stats else 500,
+            hearts=stats.hearts if stats else 5,
+            followers_count=0,  # Placeholder until follow system is built
+            following_count=0,
+        )

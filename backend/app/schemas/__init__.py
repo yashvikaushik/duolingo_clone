@@ -5,6 +5,8 @@ from app.schemas.user import (
     UserUpdate,
     UserSyncRequest,
     UserResponse,
+    UserStatsResponse,
+    UserProfileResponse,
 )
 
 __all__ = [
@@ -14,4 +16,6 @@ __all__ = [
     "UserUpdate",
     "UserSyncRequest",
     "UserResponse",
+    "UserStatsResponse",
+    "UserProfileResponse",
 ]

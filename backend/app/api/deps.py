@@ -37,6 +37,7 @@ def get_current_user(
     """
     FastAPI dependency that loads or provisions the application User from DB
     associated with the validated Firebase token.
+    Always ensures UserStats exists.
     """
     firebase_uid = payload.get("uid") or payload.get("user_id") or payload.get("sub")
     if not firebase_uid:
@@ -60,5 +61,10 @@ def get_current_user(
             display_name=name,
             avatar_url=picture,
         )
+    else:
+        # Ensure stats exist for legacy users that were created before UserStats
+        from app.repositories.user_repository import UserRepository
+        repo = UserRepository(db)
+        user = repo.ensure_stats(user)
 
     return user

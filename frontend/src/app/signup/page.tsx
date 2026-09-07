@@ -69,7 +69,8 @@ export default function SignupPage() {
 
     setIsSubmitting(true);
     try {
-      await signupWithEmail(email.trim(), password, name.trim());
+      const ageNum = age.trim() ? parseInt(age, 10) : undefined;
+      await signupWithEmail(email.trim(), password, name.trim() || undefined, ageNum);
       router.push("/profile");
     } catch {
       // error is already set in context

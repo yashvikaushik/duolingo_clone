@@ -192,9 +192,7 @@ body {
   animation: noteFloat 2s ease-in-out infinite 0.7s;
 }
 
-/* ========================= */
-/* Utility classes            */
-/* ========================= */
+/* Utility classes */
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .flex-1 { flex: 1; }
@@ -227,7 +225,6 @@ body {
 .absolute { position: absolute; }
 .cursor-pointer { cursor: pointer; }
 .leading-relaxed { line-height: 1.625; }
-/* spacing utilities */
 .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
 .px-4 { padding-left: 1rem; padding-right: 1rem; }
 .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
@@ -266,19 +263,20 @@ body {
 .duo-app-layout {
   display: flex;
   min-height: 100vh;
+  background-color: var(--bg-dark);
 }
 
 /* ========================= */
 /* Sidebar                   */
 /* ========================= */
 .duo-sidebar {
-  width: 240px;
+  width: 250px;
   min-height: 100vh;
   background-color: var(--bg-dark);
   border-right: 2px solid var(--border-dark);
   display: flex;
   flex-direction: column;
-  padding: 20px 12px;
+  padding: 24px 16px;
   position: fixed;
   top: 0;
   left: 0;
@@ -290,11 +288,12 @@ body {
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
+  text-decoration: none;
 }
 
 .duo-sidebar-title {
-  font-size: 1.4rem;
+  font-size: 1.75rem;
   font-weight: 900;
   color: var(--color-green);
   text-transform: lowercase;
@@ -304,19 +303,19 @@ body {
 .duo-sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   flex: 1;
 }
 
 .duo-sidebar-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 12px 14px;
-  border-radius: 14px;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: 16px;
   font-weight: 700;
-  font-size: 0.9rem;
-  letter-spacing: 0.3px;
+  font-size: 0.875rem;
+  letter-spacing: 0.8px;
   color: var(--text-muted);
   text-decoration: none;
   transition: all 0.15s ease;
@@ -329,74 +328,39 @@ body {
 }
 
 .duo-sidebar-item-active {
-  background-color: rgba(28, 176, 246, 0.08);
+  background-color: rgba(28, 176, 246, 0.1);
   color: var(--color-blue);
   border-color: var(--color-blue);
 }
 
 .duo-sidebar-icon {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   width: 24px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .duo-sidebar-label {
   text-transform: uppercase;
-  font-size: 0.8rem;
+  font-weight: 800;
 }
 
 .duo-sidebar-footer {
   padding-top: 16px;
   border-top: 2px solid var(--border-dark);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.duo-sidebar-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 10px;
-}
-
-.duo-sidebar-avatar img,
-.duo-avatar-placeholder {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.duo-avatar-placeholder {
-  background: linear-gradient(135deg, var(--color-blue), var(--color-green));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  font-weight: 900;
-  color: #fff;
-}
-
-.duo-sidebar-username {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-main);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 130px;
 }
 
 .duo-sidebar-logout {
+  width: 100%;
   background: none;
   border: 2px solid var(--border-muted);
   border-radius: 14px;
-  padding: 10px 14px;
+  padding: 12px 14px;
   color: var(--text-muted);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.8rem;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: center;
@@ -409,190 +373,389 @@ body {
 }
 
 /* ========================= */
-/* Main Content Area          */
+/* Main Layout 2-Column       */
 /* ========================= */
 .duo-main-content {
-  margin-left: 240px;
+  margin-left: 250px;
   flex: 1;
-  padding: 32px 40px;
+  padding: 32px 48px;
   background-color: var(--bg-dark);
   min-height: 100vh;
 }
 
-/* ========================= */
-/* Profile Page               */
-/* ========================= */
-.duo-profile-container {
-  max-width: 680px;
+.duo-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 48px;
+  max-width: 1050px;
   margin: 0 auto;
 }
 
-.duo-profile-header {
+/* Center Content Column */
+.duo-center-column {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Right Sidebar Column */
+.duo-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Top Stats Header Bar */
+.duo-top-stats-bar {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 24px;
+  justify-content: flex-end;
+  gap: 24px;
+  padding: 12px 0;
+  margin-bottom: 12px;
+}
+
+.duo-stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.duo-stat-pill.active {
+  color: var(--text-main);
+}
+
+/* Banner / Avatar Container */
+.duo-profile-banner-card {
   background-color: var(--bg-card);
-  border-radius: 20px;
   border: 2px solid var(--border-dark);
-  margin-bottom: 24px;
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
 }
 
-.duo-profile-avatar-lg img,
-.duo-avatar-placeholder-lg {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.duo-avatar-placeholder-lg {
-  background: linear-gradient(135deg, var(--color-blue), var(--color-green));
+.duo-avatar-silhouette-box {
+  width: 100%;
+  height: 180px;
+  background-color: #121e24;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: #fff;
+  position: relative;
+  margin-bottom: 24px;
+  overflow: hidden;
 }
 
-.duo-profile-info {
-  flex: 1;
+.duo-avatar-dashed-silhouette {
+  width: 100px;
+  height: 110px;
+  border: 2.5px dashed var(--color-blue);
+  border-radius: 50% 50% 40% 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-blue);
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
-.duo-profile-name {
-  font-size: 1.6rem;
+.duo-edit-pencil-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #1b2a33;
+  border: 2px solid var(--border-muted);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.duo-edit-pencil-btn:hover {
+  background-color: var(--bg-card-hover);
+  border-color: var(--color-blue);
+}
+
+/* User Meta Info */
+.duo-user-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.duo-user-fullname {
+  font-size: 1.65rem;
   font-weight: 800;
-  color: var(--text-main);
-  margin-bottom: 4px;
+  color: #ffffff;
+  margin-bottom: 2px;
 }
 
-.duo-profile-username {
+.duo-user-username-handle {
   font-size: 0.9rem;
   color: var(--text-muted);
   margin-bottom: 6px;
 }
 
-.duo-profile-joined {
+.duo-user-joined-text {
   font-size: 0.85rem;
   color: var(--text-subtle);
+  margin-bottom: 12px;
 }
 
-/* Edit Form */
-.duo-profile-edit-form {
-  background-color: var(--bg-card);
-  border: 2px solid var(--border-dark);
-  border-radius: 20px;
-  padding: 24px;
-  margin-bottom: 24px;
+.duo-user-social-counts {
   display: flex;
-  flex-direction: column;
+  gap: 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.duo-user-social-counts span {
+  color: var(--color-blue);
+  cursor: pointer;
+}
+
+.duo-user-social-counts span:hover {
+  text-decoration: underline;
+}
+
+/* Statistics Section */
+.duo-section-header {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.duo-stats-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
-.duo-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.duo-form-label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* ========================= */
-/* Stats Grid                 */
-/* ========================= */
-.duo-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.duo-stat-card {
+.duo-stat-card-item {
   background-color: var(--bg-card);
   border: 2px solid var(--border-dark);
-  border-radius: 16px;
-  padding: 16px 18px;
+  border-radius: 18px;
+  padding: 18px 20px;
   display: flex;
   align-items: center;
-  gap: 14px;
-  transition: border-color 0.15s ease;
+  gap: 16px;
 }
 
-.duo-stat-card:hover {
-  border-color: var(--border-muted);
-}
-
-.duo-stat-icon {
+.duo-stat-card-item .icon {
   font-size: 1.8rem;
 }
 
-.duo-stat-value {
-  font-size: 1.4rem;
+.duo-stat-card-item .val {
+  font-size: 1.25rem;
   font-weight: 800;
-  color: var(--text-main);
-  line-height: 1;
+  color: #ffffff;
 }
 
-.duo-stat-label {
+.duo-stat-card-item .lbl {
   font-size: 0.8rem;
   color: var(--text-muted);
   margin-top: 2px;
 }
 
-/* ========================= */
-/* Profile Section            */
-/* ========================= */
-.duo-profile-section {
+/* Achievements Section */
+.duo-achievement-card {
   background-color: var(--bg-card);
   border: 2px solid var(--border-dark);
   border-radius: 20px;
-  padding: 20px 24px;
-  margin-bottom: 24px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-.duo-section-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--text-main);
-  margin-bottom: 16px;
+.duo-achievement-badge {
+  width: 64px;
+  height: 64px;
+  background-color: #ff4b4b;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 0 #ea2b2b;
+}
+
+.duo-achievement-badge span {
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
 }
 
-.duo-detail-row {
+.duo-achievement-info {
+  flex: 1;
+}
+
+.duo-achievement-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #ffffff;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border-dark);
+  margin-bottom: 8px;
 }
 
-.duo-detail-row:last-child {
-  border-bottom: none;
+.duo-progress-bar-bg {
+  width: 100%;
+  height: 12px;
+  background-color: #121e24;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
 }
 
-.duo-detail-label {
-  font-size: 0.9rem;
-  font-weight: 700;
+.duo-progress-bar-fill {
+  height: 100%;
+  background-color: var(--color-yellow);
+  border-radius: 10px;
+}
+
+.duo-achievement-desc {
+  font-size: 0.85rem;
   color: var(--text-muted);
 }
 
-.duo-detail-value {
-  font-size: 0.9rem;
-  color: var(--text-main);
-  word-break: break-all;
+/* Right Sidebar Cards */
+.duo-widget-card {
+  background-color: var(--bg-card);
+  border: 2px solid var(--border-dark);
+  border-radius: 20px;
+  padding: 20px;
 }
 
-/* ========================= */
-/* Responsive                 */
-/* ========================= */
+.duo-tab-header {
+  display: flex;
+  border-bottom: 2px solid var(--border-dark);
+  margin-bottom: 20px;
+}
+
+.duo-tab-btn {
+  flex: 1;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+
+.duo-tab-btn.active {
+  color: var(--color-blue);
+  border-bottom-color: var(--color-blue);
+}
+
+.duo-followers-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.duo-followers-characters {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 2.2rem;
+  margin-bottom: 16px;
+}
+
+.duo-followers-text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  max-width: 240px;
+}
+
+/* Add Friends List */
+.duo-friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.duo-friend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background-color: #121e24;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.duo-friend-item:hover {
+  background-color: #1b2a33;
+}
+
+.duo-friend-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.duo-friend-arrow {
+  color: var(--text-muted);
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+/* Footer Links */
+.duo-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--text-subtle);
+  padding: 8px 4px;
+}
+
+.duo-footer-links a {
+  color: var(--text-subtle);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+}
+
+.duo-footer-links a:hover {
+  color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .duo-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
 @media (max-width: 768px) {
   .duo-sidebar {
     display: none;
@@ -600,12 +763,5 @@ body {
   .duo-main-content {
     margin-left: 0;
     padding: 20px 16px;
-  }
-  .duo-stats-grid {
-    grid-template-columns: 1fr;
-  }
-  .duo-profile-header {
-    flex-direction: column;
-    text-align: center;
   }
 }
