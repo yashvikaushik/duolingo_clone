@@ -45,14 +45,18 @@ export default function LoginPage() {
     setLocalError(null);
     setIsSubmitting(true);
     try {
+      console.log("[LoginPage] Google authentication requested");
       await loginWithGoogle();
+      console.log("[LoginPage] Google auth succeeded, navigating to /profile");
       router.push("/profile");
-    } catch {
-      // error is already set in context
+    } catch (err: any) {
+      console.error("[LoginPage] Google authentication error:", err);
+      setLocalError(err.message || "Google sign-in failed. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   const handleFacebook = async () => {
     clearError();

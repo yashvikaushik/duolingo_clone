@@ -141,10 +141,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async (): Promise<UserProfile> => {
     setError(null);
     try {
+      console.log("[AuthContext] Initiating Google signInWithPopup...");
       const cred = await signInWithPopup(auth, googleProvider);
-      return await syncWithBackend(cred.user);
+      console.log("[AuthContext] Firebase Google auth success for:", cred.user.email);
+      const user = await syncWithBackend(cred.user);
+      console.log("[AuthContext] Backend user sync success:", user);
+      return user;
     } catch (err: any) {
-      const formatted = mapAuthErrorMessage(err.code || err.message);
+      console.error("[AuthContext] Google authentication error:", err);
+      const codeOrMsg = err?.code || err?.message || String(err);
+      const formatted = mapAuthErrorMessage(codeOrMsg);
       setError(formatted);
       throw new Error(formatted);
     }
@@ -226,10 +232,20 @@ function mapAuthErrorMessage(codeOrMessage: string): string {
     return "Please enter a valid email address";
   }
   if (codeOrMessage.includes("auth/popup-closed-by-user")) {
-    return "Sign in popup was closed before completing";
+    return "Google sign-in popup was closed before completing";
+  }
+  if (codeOrMessage.includes("auth/popup-blocked")) {
+    return "Sign-in popup was blocked by your browser. Please allow popups for this site.";
+  }
+  if (codeOrMessage.includes("auth/operation-not-allowed")) {
+    return "Google sign-in is not enabled in Firebase Console. Please enable Google in Authentication -> Sign-in method.";
   }
   if (codeOrMessage.includes("auth/unauthorized-domain")) {
-    return "This domain is not authorized in your Firebase console. Please add localhost to Authorized Domains.";
+    return "This domain is not authorized in your Firebase console. Please add localhost to Authorized Domains under Authentication -> Settings.";
+  }
+  if (codeOrMessage.includes("auth/invalid-api-key")) {
+    return "Invalid Firebase API key. Please check your NEXT_PUBLIC_FIREBASE_API_KEY in .env.local.";
   }
   return codeOrMessage.replace(/^Firebase:\s*/, "");
 }
+

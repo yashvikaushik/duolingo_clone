@@ -17,12 +17,17 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
 
-  // Redirect to login if not authenticated
-  if (loading) return <LoadingScreen />;
-  if (!firebaseUser) {
-    router.push("/login");
+  // Redirect to login safely inside useEffect if not authenticated
+  React.useEffect(() => {
+    if (!loading && !firebaseUser) {
+      router.push("/login");
+    }
+  }, [loading, firebaseUser, router]);
+
+  if (loading || !firebaseUser) {
     return <LoadingScreen />;
   }
+
 
   const openEdit = () => {
     setDisplayName(dbUser?.display_name || "");
