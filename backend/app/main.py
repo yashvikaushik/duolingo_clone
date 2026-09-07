@@ -1,13 +1,25 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
+from app.core.firebase import init_firebase_admin
+from app.db.session import init_db
 from app.api.v1.router import api_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize database tables on startup
+    init_db()
+    # Initialize Firebase Admin
+    init_firebase_admin()
+    yield
 
 
 def create_application() -> FastAPI:
     """
     Application factory for the FastAPI backend.
-    Configures CORS, routers, and application metadata.
+    Configures CORS, routers, lifespan, and application metadata.
     """
     app = FastAPI(
         title=settings.PROJECT_NAME,
@@ -15,6 +27,7 @@ def create_application() -> FastAPI:
         openapi_url=f"{settings.API_V1_STR}/openapi.json",
         docs_url="/docs",
         redoc_url="/redoc",
+        lifespan=lifespan,
     )
 
     # Set up CORS middleware

@@ -1,5 +1,5 @@
-from typing import List, Union
-from pydantic import AnyHttpUrl, field_validator
+from typing import List, Optional, Union
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     
     # Database configuration (SQLite for local development)
     DATABASE_URL: str = "sqlite:///./app.db"
+    
+    # Firebase configuration
+    FIREBASE_PROJECT_ID: str = "duolingo-9e4dd"
+    FIREBASE_CREDENTIALS_PATH: Optional[str] = None
     
     # CORS Configuration
     ALLOWED_ORIGINS: Union[List[str], str] = [

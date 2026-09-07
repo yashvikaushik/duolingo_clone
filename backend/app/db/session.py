@@ -2,6 +2,9 @@ from typing import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from app.core.config import settings
+from app.db.base import Base
+# Import all models so Base.metadata knows about them
+import app.models  # noqa: F401
 
 # SQLite requires 'check_same_thread: False' for multi-threaded FastAPI execution
 connect_args = {}
@@ -19,6 +22,13 @@ SessionLocal = sessionmaker(
     autoflush=False,
     bind=engine,
 )
+
+
+def init_db() -> None:
+    """
+    Initializes database tables defined in Base.metadata.
+    """
+    Base.metadata.create_all(bind=engine)
 
 
 def get_db() -> Generator[Session, None, None]:

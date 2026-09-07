@@ -1,3 +1,3 @@
-"""Business Logic Layer (Services).
-Coordinates operations and applies domain rules.
-"""
+from app.services.user_service import UserService
+
+__all__ = ["UserService"]

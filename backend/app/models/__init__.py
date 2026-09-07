@@ -1,3 +1,3 @@
-"""SQLAlchemy Database Models package.
-Models will be defined here in future feature branches.
-"""
+from app.models.user import User
+
+__all__ = ["User"]

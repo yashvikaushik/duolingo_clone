@@ -1,3 +1,3 @@
-"""Data Access Layer (Repositories).
-Encapsulates database access logic per entity.
-"""
+from app.repositories.user_repository import UserRepository
+
+__all__ = ["UserRepository"]

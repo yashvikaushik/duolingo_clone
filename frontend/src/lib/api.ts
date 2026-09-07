@@ -1,6 +1,6 @@
 /**
  * Base API client configuration and helper functions.
- * Connects the frontend to the FastAPI backend.
+ * Connects the Next.js frontend to the FastAPI backend with Bearer token authentication.
  */
 
 export const API_BASE_URL =
@@ -14,26 +14,47 @@ export interface ApiResponse<T> {
 
 export async function fetchApi<T>(
   endpoint: string,
-  options?: RequestInit
+  options?: RequestInit & { token?: string | null }
 ): Promise<ApiResponse<T>> {
   try {
     const url = `${API_BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...(options?.headers as Record<string, string>),
+    };
+
+    if (options?.token) {
+      headers["Authorization"] = `Bearer ${options.token}`;
+    }
+
     const response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.headers,
-      },
       ...options,
+      headers,
     });
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      data = null;
+    }
+
+    if (!response.ok) {
+      const errorMsg =
+        data?.detail || data?.message || `Request failed with status ${response.status}`;
+      return {
+        error: errorMsg,
+        status: response.status,
+      };
+    }
+
     return {
-      data,
+      data: data as T,
       status: response.status,
     };
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : "An unexpected error occurred",
+      error: error instanceof Error ? error.message : "Network error occurred",
       status: 500,
     };
   }
