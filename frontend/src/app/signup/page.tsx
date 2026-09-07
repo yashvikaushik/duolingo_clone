@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { SocialButtons } from "@/components/ui/SocialButtons";
 import { DuoMascot } from "@/components/ui/DuoMascot";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 export default function SignupPage() {
-  const { signupWithEmail, loginWithGoogle, loginWithFacebook, error, clearError } = useAuth();
+  const { signupWithEmail, loginWithGoogle, loginWithFacebook, error, clearError, syncing } = useAuth();
   const router = useRouter();
 
   const [age, setAge] = useState("");
@@ -18,6 +19,11 @@ export default function SignupPage() {
   const [step, setStep] = useState<"info" | "credentials">("info");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+
+  if (isSubmitting || syncing) {
+    return <LoadingScreen message="CREATING ACCOUNT..." />;
+  }
+
 
   const handleInfoStep = (e: FormEvent) => {
     e.preventDefault();

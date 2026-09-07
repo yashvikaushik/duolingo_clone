@@ -5,15 +5,21 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { SocialButtons } from "@/components/ui/SocialButtons";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 export default function LoginPage() {
-  const { loginWithEmail, loginWithGoogle, loginWithFacebook, error, clearError } = useAuth();
+  const { loginWithEmail, loginWithGoogle, loginWithFacebook, error, clearError, syncing } = useAuth();
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+
+  if (isSubmitting || syncing) {
+    return <LoadingScreen message="LOGGING IN..." />;
+  }
+
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
